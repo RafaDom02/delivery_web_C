@@ -7,7 +7,7 @@ INCDIR = src/include
 SOURCES = $(SRCDIR)/conf.c
 HEADERS = $(INCDIR)/conf.h
 
-TARGET = main
+TARGET = web-service
 
 all: $(TARGET)
 
