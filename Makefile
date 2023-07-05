@@ -21,4 +21,4 @@ $(KILLER): $(SRC_KILLER)
 	$(CC) $(CFLAGS) -o $(KILLER) $(SRC_KILLER)
 
 clean:
-	rm -f $(TARGET)
+	rm -f $(TARGET) $(KILLER)
