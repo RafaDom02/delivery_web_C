@@ -10,6 +10,8 @@ void get_data(conf* config);
 void assign_value(conf* config, const char* line, const enum value val);
 char* obtainValue(const char* line);
 void removeNewLine(char* str);
+conf* get_conf();
+void free_conf(conf* config);
 
 conf* get_conf() {
     conf* config = (conf*)malloc(sizeof(conf));
@@ -116,6 +118,13 @@ void removeNewLine(char* str) {
     }
 }
 
+void free_conf(conf* config){
+    if (!config) return;
+    if (config->interface) free(config->interface);
+    if (config->ip) free(config->ip);
+    free(config);
+}
+
 int main() {
     conf* myConfig = get_conf();
 
@@ -125,9 +134,7 @@ int main() {
         printf("%d\n", myConfig->port);
         printf("%d\n", myConfig->childs);
 
-        free(myConfig->interface);
-        free(myConfig->ip);
-        free(myConfig);
+        free_conf(myConfig);
     }
 
     return 0;

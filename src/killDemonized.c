@@ -2,16 +2,27 @@
 #include <signal.h>
 #include <sys/types.h>
 
+void killDemonized();
+
+int main(){
+    killDemonized();
+    return 0;
+}
+
+/**
+ * @brief Read the demonized proccess PID and kills it
+ * 
+ */
 void killDemonized(){
     FILE *f;
     pid_t pid;
 
 #ifdef _WIN32
     // Windows-specific code to open the PID file
-    f = fopen("C:\\Temp\\mydaemon.pid", "r");
+    f = fopen("..\\mydaemon.pid", "r");
 #else
     // Linux-specific code to open the PID file
-    f = fopen("/var/run/mydaemon.pid", "r");
+    f = fopen("../mydaemon.pid", "r");
 #endif
     if(!f){
         printf("Could not open that file.\n");
@@ -21,17 +32,7 @@ void killDemonized(){
     //Read demonized proccess pid from the file
     fscanf(f, "%d", &pid);
 
+    printf("Killing proccess with pid %d\n", pid);
     //To-Do: Send signal
     kill(pid, SIGTERM);
-
-#ifdef _WIN32
-    remove("C:\\Temp\\mydaemon.pid");
-#else
-    remove("/var/run/mydaemon.pid");
-#endif
-}
-
-int main(){
-    killDemonized();
-    return 0;
 }

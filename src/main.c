@@ -7,18 +7,23 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+//Signal behaviour
+#include <signal.h>
+
 #define MAX_PATH 100
 
 void demonize();
 void sigterm_handler(int signal);
+void free_all();
 
 int main(){
-    //system("clear");
+    system("clear");
 
     demonize();
 
-    while(1);
 
+
+    free_all();
     return EXIT_SUCCESS;
 }
 
@@ -44,8 +49,6 @@ void demonize(){
     close(STDIN_FILENO);
     close(STDOUT_FILENO);
     close(STDERR_FILENO);
-
-    //To-Do: handle signal (exit)
 
 #ifdef _WIN32
     // Windows-specific code to get the base directory
@@ -75,19 +78,23 @@ void demonize(){
     //Store PID in a file
 #ifdef _WIN32
     // Windows-specific code to open the PID file
-    f = fopen("C:\\Temp\\mydaemon.pid", "w");
+    f = fopen("..\\mydaemon.pid", "w");
 #else
     // Linux-specific code to open the PID file
-    f = fopen("/var/run/mydaemon.pid", "w");
+    f = fopen("../mydaemon.pid", "w");
 #endif
     if (!f){
         printf("PID file could not bo opened");
         exit(EXIT_FAILURE);
     }
-    printf("Se escribe %d", pid);
-    fprintf(f, "%d", pid);
+
+    fprintf(f, "%d", getpid());
+
     //Close PID file
     fclose(f);
+
+    //Select signal handler for killing the demonized proccess
+    signal(SIGTERM, sigterm_handler);
 }
 
 /**
@@ -96,5 +103,19 @@ void demonize(){
  * @param signal signal recieved
  */
 void sigterm_handler(int signal){
+    free_all();
     exit(EXIT_SUCCESS);
+}
+
+/**
+ * @brief Free all memory used and removes PID file
+ * 
+ */
+void free_all(){
+#ifdef _WIN32
+    remove("..\\mydaemon.pid");
+#else
+    remove("../mydaemon.pid");
+#endif
+
 }
