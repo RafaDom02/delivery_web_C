@@ -10,18 +10,34 @@
 //Signal behaviour
 #include <signal.h>
 
+/*************SELF CREATED LIBRARIES***************/
+//Gets configuration written in server.conf
+#include "conf.h"
+
 #define MAX_PATH 100
 
+#ifdef _WIN32
+    #define PID_FILE ".\\mydaemon.pid"
+#else
+    #define PID_FILE "./mydaemon.pid"
+#endif
+
 void demonize();
-void sigterm_handler(int signal);
+void sigterm_handler();
 void free_all();
 
+/*************GLOBAL VARIABLES***************/
+conf* config = NULL;
+
 int main(){
+
     system("clear");
 
     demonize();
 
+    config = get_conf();
 
+    while(1);
 
     free_all();
     return EXIT_SUCCESS;
@@ -35,7 +51,6 @@ int main(){
 void demonize(){
     pid_t pid = fork();
     char cwd[MAX_PATH];
-    char* lastSlash;
     FILE * f;
     
     //Error while forking
@@ -51,6 +66,7 @@ void demonize(){
     close(STDERR_FILENO);
 
 #ifdef _WIN32
+    char *lastSlash;
     // Windows-specific code to get the base directory
     // Adapt the path as needed
     if (GetModuleFileName(NULL, cwd, sizeof(cwd)) == 0) {
@@ -76,13 +92,10 @@ void demonize(){
     umask(0);
 
     //Store PID in a file
-#ifdef _WIN32
+
     // Windows-specific code to open the PID file
-    f = fopen("..\\mydaemon.pid", "w");
-#else
-    // Linux-specific code to open the PID file
-    f = fopen("../mydaemon.pid", "w");
-#endif
+    f = fopen(PID_FILE, "w");
+
     if (!f){
         printf("PID file could not bo opened");
         exit(EXIT_FAILURE);
@@ -100,9 +113,8 @@ void demonize(){
 /**
  * @brief Signal handler to finalize the demonized proccess
  * 
- * @param signal signal recieved
  */
-void sigterm_handler(int signal){
+void sigterm_handler(){
     free_all();
     exit(EXIT_SUCCESS);
 }
@@ -112,10 +124,8 @@ void sigterm_handler(int signal){
  * 
  */
 void free_all(){
-#ifdef _WIN32
-    remove("..\\mydaemon.pid");
-#else
-    remove("../mydaemon.pid");
-#endif
-
+    
+    if(access(PID_FILE, F_OK) == 0) remove(PID_FILE);
+    
+    if(config) free_conf(config);
 }

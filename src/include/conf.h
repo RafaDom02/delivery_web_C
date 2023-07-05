@@ -23,5 +23,6 @@ enum value {
 
 
 conf* get_conf();
+void free_conf(conf* config);
 
 #endif

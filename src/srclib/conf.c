@@ -125,7 +125,7 @@ void free_conf(conf* config){
     free(config);
 }
 
-int main() {
+/*int main() {
     conf* myConfig = get_conf();
 
     if (myConfig != NULL) {
@@ -138,4 +138,4 @@ int main() {
     }
 
     return 0;
-}
+}*/

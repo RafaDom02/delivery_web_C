@@ -19,10 +19,10 @@ void killDemonized(){
 
 #ifdef _WIN32
     // Windows-specific code to open the PID file
-    f = fopen("..\\mydaemon.pid", "r");
+    f = fopen(".\\mydaemon.pid", "r");
 #else
     // Linux-specific code to open the PID file
-    f = fopen("../mydaemon.pid", "r");
+    f = fopen("./mydaemon.pid", "r");
 #endif
     if(!f){
         printf("Could not open that file.\n");
